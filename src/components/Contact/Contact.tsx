@@ -287,7 +287,7 @@ const Contact: React.FC<ContactProps> = ({ contactInfo }) => {
                     required
                     rows={5}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-                    placeholder="Tell me about your project..."
+                    placeholder="Message..."
                   />
                 </div>
                 
