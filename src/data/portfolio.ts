@@ -2,6 +2,53 @@ import type { Project, Experience, Skill, ContactInfo } from '../types';
 
 // Satyam's actual portfolio data
 export const projects: Project[] = [
+{
+  id: 'project-5',
+  title: 'SHEIN India',
+  description:
+    'Large-scale e-commerce mobile application delivering seamless fashion shopping experiences',
+  fullDescription:
+    'SHEIN India is a high-traffic fashion e-commerce mobile application built to handle complex user journeys at scale. I worked on critical customer-facing modules including authentication, home screen, category browsing, cart, and checkout. The app features advanced UI interactions, optimized pagination strategies, and intelligent user engagement using CleverTap notifications.',
+  technologies: [
+    'React Native',
+    'TypeScript',
+    'Redux',
+    'REST APIs',
+    'Firebase',
+    'CleverTap',
+    'Reanimated',
+    'FDK'
+  ],
+  category: 'E-commerce App',
+  image: '/images/shein-app.png',
+  demoUrl: '#',
+  githubUrl: '#',
+  features: [
+    'Authentication flows with OTP verification, registration, and auto-read OTP support',
+    'Dynamic Home Screen with complex pull-to-refresh animations',
+    'Category and product listing screens with pagination',
+    'PagerView-based preloading to improve scroll performance and UX',
+    'Cart management including add, remove, update quantity',
+    'Checkout flow with address selection and order summary handling',
+    'Low stock and limited availability indicators',
+    'CleverTap integration for push notifications and user engagement'
+  ],
+  challenges: [
+    'Managing complex UI and state across cart and checkout flows',
+    'Ensuring smooth performance for large product lists',
+    'Handling advanced animation states during pull-to-refresh',
+    'Optimizing navigation and screen lifecycle handling'
+  ],
+  solutions: [
+    'Implemented structured Redux architecture for scalable state management',
+    'Used PagerView to preload category data and reduce perceived loading time',
+    'Built custom pull-to-refresh animations using Reanimated',
+    'Improved API abstraction and error handling for stability'
+  ],
+  impact:
+    'Enhanced user experience with smoother animations, faster category browsing, and reliable cart and checkout flows',
+  timeline: 'Ongoing'
+},
 
   {
     id: 'project-2',
