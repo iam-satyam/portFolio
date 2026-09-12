@@ -3,20 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 type Theme = 'light' | 'dark';
 const isTheme = (value: unknown): value is Theme => value === 'light' || value === 'dark';
 
-const readPreference = () => {
-  try {
-    const saved = localStorage.getItem('portfolio-theme');
-    return isTheme(saved) ? saved : null;
-  } catch {
-    return null;
-  }
-};
-
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() =>
     document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
   );
-  const preference = useRef<Theme | null>(readPreference());
   const transitionTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -27,19 +17,12 @@ export const useTheme = () => {
   }, [theme]);
 
   useEffect(() => {
-    const system = window.matchMedia('(prefers-color-scheme: light)');
-    const followSystem = () => {
-      if (!preference.current) setTheme(system.matches ? 'light' : 'dark');
-    };
     const syncPreference = (event: StorageEvent) => {
       if (event.key !== 'portfolio-theme' && event.key !== null) return;
-      preference.current = isTheme(event.newValue) ? event.newValue : null;
-      setTheme(preference.current ?? (system.matches ? 'light' : 'dark'));
+      setTheme(isTheme(event.newValue) ? event.newValue : 'dark');
     };
-    system.addEventListener('change', followSystem);
     window.addEventListener('storage', syncPreference);
     return () => {
-      system.removeEventListener('change', followSystem);
       window.removeEventListener('storage', syncPreference);
       window.clearTimeout(transitionTimer.current);
       document.documentElement.classList.remove('theme-changing');
@@ -48,7 +31,6 @@ export const useTheme = () => {
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
-    preference.current = next;
     try { localStorage.setItem('portfolio-theme', next); } catch { /* The theme still works without storage. */ }
     document.documentElement.classList.add('theme-changing');
     window.clearTimeout(transitionTimer.current);
