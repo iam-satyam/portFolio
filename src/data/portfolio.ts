@@ -55,7 +55,7 @@ export const projects: Project[] = [
     title: 'SAIL (Grahak Sampark)',
     description: 'Customer relationship management app for Steel Authority of India Ltd with field operations support',
     fullDescription: 'SAIL Grahak Sampark is a comprehensive mobile application developed for the Steel Authority of India Ltd (SAIL) to enhance their customer relationship management and field operations. The app enables customer service and field executives to manage meetings, visits, customer profiles, product catalogs, and customer interactions efficiently.',
-    technologies: ['React Native', 'Google Maps SDK', 'Firebase', 'REST APIs', 'Redux',"Push Notifications"],
+    technologies: ['React Native', 'Google SDKs', 'Firebase', 'REST APIs', 'Redux',"Push Notifications"],
     category: 'Enterprise App',
     image: '/images/sail-appstore.png',
     demoUrl: 'https://play.google.com/store/apps/details?id=com.successive.sailGrahak',
@@ -65,19 +65,19 @@ export const projects: Project[] = [
       'Meeting and visit scheduling system',
       'Product catalog management',
       'Field operations support',
-      'Google Maps integration for location services',
+      'Google SDK integrations for location services',
       'Nearest personnel assignment system',
       'Real-time communication tools',
       'Comprehensive reporting and analytics'
     ],
     challenges: [
-      'Integrating complex Google Maps functionality',
+      'Integrating complex location functionality through Google SDKs',
       'Optimizing personnel assignment algorithms',
       'Managing large-scale customer data',
       'Ensuring reliable performance in field conditions'
     ],
     solutions: [
-      'Integrated Google Maps SDK for precise location services',
+      'Integrated Google SDKs for precise location services',
       'Developed efficient algorithms for nearest personnel assignment',
       'Implemented robust data management with pagination and caching',
       'Added offline capabilities for field operations'
@@ -198,14 +198,13 @@ export const experiences: Experience[] = [
     company: 'Successive Digital',
     position: 'Associate Engineer',
     duration: 'April 2024 - Present',
-    description: 'Contributing to ongoing project development and delivering scalable mobile solutions using React Native and modern technologies.',
-    technologies: ['React Native', 'Redux', 'TypeScript', 'Firebase', 'GraphQL', 'REST APIs', 'Razorpay', 'Google Maps'],
+    description: 'Building scalable cross-platform products across commerce, loyalty, and offline-first enterprise workflows.',
+    technologies: ['React Native', 'Redux', 'TypeScript', 'Firebase', 'Realm', 'REST APIs', 'Razorpay', 'Google SDKs', 'CI/CD'],
     achievements: [
-      'Designed and implemented reusable, responsive UI components reducing development time by 30%',
-      'Built authentication, real-time updates, and efficient data layers using REST APIs, Firebase, and GraphQL',
-      'Integrated Razorpay for secure transactions and Google Maps for location-based services',
-      'Deployed 3+ production-ready apps to Google Play and Apple App Store with zero critical issues',
-      'Enhanced cross-device compatibility and user experience across mobile and tablet platforms'
+      'Built and deployed 3+ cross-platform applications across Android and iOS',
+      'Integrated payments, deep linking, push notifications, and maps, improving feature adoption by 35%',
+      'Implemented Realm-based offline-first architecture, improving application performance by 30%',
+      'Contributed to CI/CD pipelines and testing, reducing release turnaround time by 25%'
     ]
   },
   {
@@ -213,59 +212,59 @@ export const experiences: Experience[] = [
     company: 'Successive Digital',
     position: 'Trainee Engineer',
     duration: 'October 2023 - April 2024',
-    description: 'Gained comprehensive hands-on experience in React Native development and mobile application concepts through structured training programs.',
+    description: 'Completed structured React Native training and translated core mobile concepts into production-ready modules.',
     technologies: ['React Native', 'JavaScript', 'Mobile Development', 'Redux', 'Firebase'],
     achievements: [
-      'Completed 10+ structured training modules in React Native development',
+      'Completed 10+ structured training modules and built production-ready React Native features',
       'Consistently earned 5-star feedback from mentors for performance and code quality',
-      'Demonstrated excellent delivery timelines and technical understanding',
-      'Built foundational knowledge in mobile app architecture and best practices'
+      'Developed hands-on experience in debugging, SDK integration, testing, and mobile deployment'
     ]
   }
 ];
 
 export const skills: Skill[] = [
-  // Mobile Development
-  { name: 'React Native', category: 'Mobile', proficiency: 95 },
-  { name: 'TypeScript', category: 'Frontend', proficiency: 90 },
-  { name: 'JavaScript', category: 'Frontend', proficiency: 92 },
-  { name: 'Kotlin', category: 'Mobile', proficiency: 60 },
-  
-  // State Management & APIs
-  { name: 'Redux', category: 'Frontend', proficiency: 95 },
-  { name: 'Context API', category: 'Frontend', proficiency: 95 },
-  { name: 'REST APIs', category: 'Backend', proficiency: 90 },
-  { name: 'GraphQL', category: 'Backend', proficiency: 80 },
-  
-  // Backend & Cloud
-  { name: 'Firebase', category: 'Backend', proficiency: 88 },
-  { name: 'Supabase', category: 'Backend', proficiency: 75 },
-  { name: 'Google Apps Script', category: 'Backend', proficiency: 80 },
-  
-  // Maps & Location Services
-  { name: 'Google Maps SDK', category: 'Mobile', proficiency: 85 },
-  { name: 'Deep Linking', category: 'Mobile', proficiency: 80 },
-  { name: 'Razorpay', category: 'Mobile', proficiency: 85 },
-  { name: 'Push Notifications', category: 'Mobile', proficiency: 90 },
-  
-  // Database & Storage
-  { name: 'SQLite', category: 'Database', proficiency: 85 },
-  { name: 'Realm Database', category: 'Database', proficiency: 90 },
-  { name: 'AsyncStorage', category: 'Database', proficiency: 88 },
-  
-  // Development Tools
-  { name: 'Git', category: 'Tools', proficiency: 90 },
-  { name: 'Android Studio', category: 'Tools', proficiency: 85 },
-  { name: 'Xcode', category: 'Tools', proficiency: 80 },
-  { name: 'Visual Studio', category: 'Tools', proficiency: 85 },
-  
-  // Programming Languages
-  { name: 'C++', category: 'Backend', proficiency: 82 },
-  { name: 'C#', category: 'Backend', proficiency: 75 },
-  
-  // Testing & DevOps
-  { name: 'Jest', category: 'Tools', proficiency: 78 },
-  { name: 'JIRA', category: 'Tools', proficiency: 70 },
+  // Mobile product delivery
+  { name: 'React Native', category: 'Mobile' },
+  { name: 'Kotlin', category: 'Mobile' },
+  { name: 'Juspay', category: 'Mobile' },
+  { name: 'Razorpay', category: 'Mobile' },
+  { name: 'Google SDKs', category: 'Mobile' },
+  { name: 'Deferred Deep Links', category: 'Mobile' },
+  { name: 'Push Notifications', category: 'Mobile' },
+  { name: 'CI/CD Pipeline Creation', category: 'Mobile' },
+
+  // Frontend architecture
+  { name: 'TypeScript', category: 'Frontend' },
+  { name: 'JavaScript', category: 'Frontend' },
+  { name: 'Redux', category: 'Frontend' },
+  { name: 'Zustand', category: 'Frontend' },
+  { name: 'Context API', category: 'Frontend' },
+
+  // APIs and platform services
+  { name: 'REST APIs', category: 'Backend' },
+  { name: 'GraphQL', category: 'Backend' },
+  { name: 'Supabase', category: 'Backend' },
+  { name: 'Google Apps Script', category: 'Backend' },
+
+  // Product analytics and attribution
+  { name: 'AppsFlyer', category: 'Analytics' },
+  { name: 'Amplitude', category: 'Analytics' },
+  { name: 'GA4', category: 'Analytics' },
+  { name: 'CleverTap', category: 'Analytics' },
+  { name: 'Firebase', category: 'Analytics' },
+
+  // Database and storage
+  { name: 'SQLite', category: 'Database' },
+  { name: 'Realm Database', category: 'Database' },
+  { name: 'AsyncStorage', category: 'Database' },
+
+  // Development tools
+  { name: 'Git', category: 'Tools' },
+  { name: 'Android Studio', category: 'Tools' },
+  { name: 'Xcode', category: 'Tools' },
+  { name: 'Visual Studio', category: 'Tools' },
+  { name: 'Jest', category: 'Tools' },
+  { name: 'JIRA', category: 'Tools' },
 ];
 
 export const contactInfo: ContactInfo = {
@@ -273,6 +272,6 @@ export const contactInfo: ContactInfo = {
   phone: '+91 9319733487',
   location: 'New Delhi, India 110059',
   linkedin: 'https://www.linkedin.com/in/satyam-a4791321a/',
-  github: 'https://leetcode.com/u/satyamEpoch',
+  leetcode: 'https://leetcode.com/u/satyamEpoch',
   website: 'https://satyam-portfolio.vercel.app'
 };

@@ -1,31 +1,28 @@
 import { useEffect, useState } from 'react';
 
+const sectionIds = ['home', 'skills', 'experience', 'projects', 'achievements', 'contact'];
+
 export const useActiveSection = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'projects', 'experience', 'contact'];
-      const scrollPosition = window.scrollY + 100;
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const height = element.offsetHeight;
-          
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+        if (visible[0]) setActiveSection(visible[0].target.id);
+      },
+      { rootMargin: '-25% 0px -55% 0px', threshold: [0, 0.15, 0.4] },
+    );
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   return { activeSection, setActiveSection };

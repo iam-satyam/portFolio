@@ -1,301 +1,632 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Clock, Target, Lightbulb, CheckCircle } from 'lucide-react';
-import type { Project } from '../../types';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import { useReducedMotionPreference } from '../../hooks/useReducedMotionPreference';
+import {
+  ArrowUpRight,
+  Check,
+  CircleGauge,
+  Database,
+  Play,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from 'lucide-react';
+import type { CaseStudyProject, ProjectGroup } from '../../types';
 
-interface ProjectCardProps {
-  project: Project;
-  index: number;
+interface ProjectsProps {
+  projects: CaseStudyProject[];
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const filters: Array<'All' | ProjectGroup> = ['All', 'Commerce', 'Travel', 'Enterprise'];
+
+const BrandImage = ({ project }: { project: CaseStudyProject }) => {
+  const [loaded, setLoaded] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      viewport={{ once: true }}
-      className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col w-full group hover:-translate-y-1 h-fit"
-    >
-      {/* Project Image */}
-      <div className="relative h-52 sm:h-72 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
-        <img 
-          src={project.image} 
-          alt={project.title}
-          className="w-full h-full object-contain bg-white dark:bg-slate-800 transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            // Fallback to gradient background if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            target.parentElement!.classList.add('bg-gradient-to-br', 'from-blue-500', 'to-purple-600', 'flex', 'items-center', 'justify-center');
-            target.parentElement!.innerHTML = `
-              <div class="text-white text-7xl font-bold opacity-30">
-                ${project.title.split(' ').map(word => word[0]).join('').slice(0, 2)}
-              </div>
-              <div class="absolute inset-0 bg-black/10"></div>
-            `;
-          }}
-        />
-        <div className="absolute top-6 right-6">
-          <motion.span 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full text-gray-800 text-sm font-semibold shadow-lg border border-white/20"
-          >
-            {project.category}
-          </motion.span>
+    <div className="case-logo">
+      {!loaded && <span className="case-logo-skeleton" aria-hidden="true" />}
+      <img
+        className={loaded ? 'is-loaded' : ''}
+        src={project.image}
+        alt={`${project.title} app icon`}
+        width="112"
+        height="112"
+        loading={project.featured ? 'eager' : 'lazy'}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+      />
+    </div>
+  );
+};
+
+const DeviceScreen = ({ project }: { project: CaseStudyProject }) => {
+  return (
+    <div className={`device-screen screen-${project.visual}`}>
+      <div className="device-status">
+        <span>9:41</span>
+        <i />
+        <span>● ● ●</span>
+      </div>
+      <div className="device-app-head">
+        <BrandImage project={project} />
+        <div>
+          <small>{project.client}</small>
+          <strong>{project.title}</strong>
         </div>
       </div>
 
-      <div className="p-8 flex-1 flex flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 leading-tight">
-              {project.title}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
-              {project.description}
-            </p>
+      {project.visual === 'commerce' && (
+        <>
+          <div className="mock-search">Search styles and products</div>
+          <div className="commerce-hero">
+            <span>NEW SEASON</span>
+            <strong>Made for now.</strong>
+            <button>Explore</button>
+          </div>
+          <div className="product-tiles">
+            <span /><span /><span />
+          </div>
+        </>
+      )}
+
+      {project.visual === 'loyalty' && (
+        <>
+          <div className="loyalty-card">
+            <span>MEMBER PASS</span>
+            <strong>Gold</strong>
+            <small>2,480 available points</small>
+            <i />
+          </div>
+          <div className="reservation-card">
+            <span>UPCOMING STAY</span>
+            <strong>Hakone · 18 Aug</strong>
+            <small>Reservation confirmed</small>
+          </div>
+          <div className="device-action-row"><span>Rewards</span><span>Bookings</span><span>Pass</span></div>
+        </>
+      )}
+
+      {project.visual === 'maritime' && (
+        <>
+          <div className="maritime-map">
+            <span className="map-route route-one" />
+            <span className="map-route route-two" />
+            <i className="vessel vessel-one">▲</i>
+            <i className="vessel vessel-two">▲</i>
+            <small>Live fleet · 08 vessels</small>
+          </div>
+          <div className="alert-card">
+            <ShieldCheck size={15} />
+            <span><strong>Security status</strong><small>All signals normal</small></span>
+          </div>
+        </>
+      )}
+
+      {project.visual === 'crm' && (
+        <>
+          <div className="crm-summary">
+            <span><small>Today</small><strong>12 visits</strong></span>
+            <span><small>Follow-ups</small><strong>08</strong></span>
+          </div>
+          <div className="crm-list">
+            {['Customer meeting', 'Dealer follow-up', 'Visit report'].map((item, index) => (
+              <div key={item}><i>{index + 1}</i><span><strong>{item}</strong><small>Synced · just now</small></span><Check size={13} /></div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {project.visual === 'kiosk' && (
+        <>
+          <div className="kiosk-summary">
+            <span>SHIFT OVERVIEW</span>
+            <strong>₹48,240</strong>
+            <small>Sales today · synced locally</small>
+          </div>
+          <div className="inventory-bars">
+            {[72, 48, 88, 58, 94, 67, 81].map((height, index) => (
+              <i key={index} style={{ height: `${height}%` }} />
+            ))}
+          </div>
+          <div className="sync-state"><Database size={13} /> Offline data ready <span>●</span></div>
+        </>
+      )}
+
+      {project.visual === 'visitor' && (
+        <>
+          <div className="visitor-frame">
+            <div className="face-target"><span /><span /><span /><span /></div>
+            <div className="qr-pattern" />
+          </div>
+          <div className="visitor-state">
+            <Check size={14} />
+            <span><strong>Identity verified</strong><small>Visitor pass generated</small></span>
+          </div>
+        </>
+      )}
+
+      <div className="device-home" />
+    </div>
+  );
+};
+
+const StoreLinks = ({ project }: { project: CaseStudyProject }) => {
+  const { android, ios, demo } = project.storeLinks;
+
+  return (
+    <div className="store-links">
+      {android && (
+        <a
+          className="store-badge-link"
+          href={android}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Get ${project.title} on Google Play`}
+        >
+          <img
+            src="/badges/google-play-badge.png"
+            alt="Get it on Google Play"
+            width="103"
+            height="40"
+            loading="lazy"
+          />
+        </a>
+      )}
+      {ios && (
+        <a
+          className="store-badge-link"
+          href={ios}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Download ${project.title} on the App Store`}
+        >
+          <img
+            src="/badges/app-store-badge.svg"
+            alt="Download on the App Store"
+            width="120"
+            height="40"
+            loading="lazy"
+          />
+        </a>
+      )}
+      {demo && (
+        <a className="demo-store-link" href={demo} target="_blank" rel="noreferrer">
+          <Play size={14} aria-hidden="true" />
+          <span><small>View the</small>Product demo</span>
+          <ArrowUpRight size={13} aria-hidden="true" />
+        </a>
+      )}
+      {!android && !ios && demo && (
+        <span className="private-release">
+          {project.id === 'nexo'
+            ? 'Deployed only in the South African region'
+            : 'Private deployment'}
+        </span>
+      )}
+    </div>
+  );
+};
+
+const CaseStudyModal = ({
+  project,
+  onClose,
+}: {
+  project: CaseStudyProject;
+  onClose: () => void;
+}) => {
+  const dialogRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !dialogRef.current) return;
+      const focusableElements = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (!focusableElements.length) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <motion.div
+      className="case-modal-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <motion.aside
+        id={`case-study-modal-${project.id}`}
+        className="case-modal"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`case-modal-title-${project.id}`}
+        style={{
+          '--case-accent': project.accent,
+          '--case-deep': project.deepAccent,
+        } as CSSProperties}
+        initial={{ x: '100%', opacity: 0.6 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: '100%', opacity: 0.5 }}
+        transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="case-modal-header">
+          <div>
+            <BrandImage project={project} />
+            <span>
+              <small>{project.client}</small>
+              <strong id={`case-modal-title-${project.id}`}>{project.title}</strong>
+            </span>
+          </div>
+          <button ref={closeButtonRef} onClick={onClose} aria-label={`Close ${project.title} case study`}>
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="case-modal-scroll">
+          <div className="case-modal-hero">
+            <div className="case-badges">
+              {project.featured && (
+                <span className="featured-badge"><Sparkles size={11} /> Featured project</span>
+              )}
+              <span><span className="live-dot" /> Production app</span>
+              <span>{project.category}</span>
+            </div>
+
+            <p>{project.overview}</p>
+
+            <div className="case-modal-facts">
+              <div><span>Role</span><strong>{project.role}</strong></div>
+              <div><span>Duration</span><strong>{project.duration}</strong></div>
+              {project.metrics.map((metric) => (
+                <div key={metric.label}><span>{metric.label}</span><strong>{metric.value}</strong></div>
+              ))}
+            </div>
+
+            <StoreLinks project={project} />
+          </div>
+
+          <div className="case-modal-content">
+            <section className="case-modal-section case-modal-problem">
+              <span>01 / Business problem</span>
+              <p>{project.businessProblem}</p>
+            </section>
+
+            <section className="case-modal-section">
+              <span>02 / Engineering contribution</span>
+              <ul>
+                {project.contributions.map((item) => (
+                  <li key={item}><Check size={13} aria-hidden="true" /> {item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <div className="case-modal-grid">
+              <section className="case-modal-section">
+                <span>03 / Features developed</span>
+                <ul>{project.features.map((item) => <li key={item}>{item}</li>)}</ul>
+              </section>
+
+              <section className="case-modal-section">
+                <span>04 / Technical challenges</span>
+                <ul>{project.challenges.map((item) => <li key={item}>{item}</li>)}</ul>
+              </section>
+
+              <section className="case-modal-section">
+                <span>05 / Solutions implemented</span>
+                <ul>{project.solutions.map((item) => <li key={item}>{item}</li>)}</ul>
+              </section>
+
+              <section className="case-modal-section case-modal-performance">
+                <span><CircleGauge size={14} aria-hidden="true" /> 06 / Performance work</span>
+                <ul>{project.performance.map((item) => <li key={item}>{item}</li>)}</ul>
+              </section>
+            </div>
+
+            <section className="case-modal-section case-modal-timeline">
+              <span>07 / Delivery timeline</span>
+              <div>
+                {['Discover', 'Architect', 'Build', 'Stabilize', 'Ship'].map((phase, phaseIndex) => (
+                  <span key={phase}><i>{phaseIndex + 1}</i>{phase}</span>
+                ))}
+              </div>
+            </section>
+
+            <section className="case-modal-section case-modal-stack">
+              <span>08 / Technology system</span>
+              <div>
+                {project.technologies.map((technology) => (
+                  <span key={technology}>{technology}</span>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      </motion.aside>
+    </motion.div>,
+    document.body,
+  );
+};
+
+const CaseStudyCard = ({
+  project,
+  index,
+  onOpen,
+}: {
+  project: CaseStudyProject;
+  index: number;
+  onOpen: (project: CaseStudyProject) => void;
+}) => {
+  const cardRef = useRef<HTMLElement>(null);
+  const reducedMotion = useReducedMotionPreference();
+  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] });
+  const visualY = useTransform(scrollYProgress, [0, 1], [24, -24]);
+
+  return (
+    <motion.article
+      ref={cardRef}
+      className={`case-study ${project.featured ? 'is-featured' : 'is-collection'} case-${project.visual}`}
+      style={{
+        '--case-accent': project.accent,
+        '--case-deep': project.deepAccent,
+      } as CSSProperties}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, amount: 0.08 }}
+    >
+      <div className="animated-case-border" aria-hidden="true" />
+      <div className="case-copy">
+        <div className="case-index">
+          <span>0{index + 1}</span>
+          <span>{project.category}</span>
+        </div>
+
+        <div className="case-badges">
+          {project.featured && <span className="featured-badge"><Sparkles size={11} /> Featured project</span>}
+          <span><span className="live-dot" /> Production app</span>
+          {project.storeLinks.android && <span>Android</span>}
+          {project.storeLinks.ios && <span>iOS</span>}
+        </div>
+
+        <div className="case-title-row">
+          <BrandImage project={project} />
+          <div>
+            <span>{project.client}</span>
+            <h3>{project.title}</h3>
           </div>
         </div>
 
-        {/* Technologies */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {project.technologies.map((tech, techIndex) => (
-              <motion.span
-                key={techIndex}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: techIndex * 0.1 }}
-                className="px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg border border-blue-200/50 dark:border-blue-800/50 hover:shadow-sm transition-all duration-200"
-              >
-                {tech}
-              </motion.span>
+        <p className="case-overview">{project.overview}</p>
+
+        <div className="case-facts">
+          <div><span>Role</span><strong>{project.role}</strong></div>
+          <div><span>Duration</span><strong>{project.duration}</strong></div>
+        </div>
+
+        <div className="contribution-preview">
+          <span>Contribution highlights</span>
+          <div>
+            {project.contributions.slice(0, project.featured ? 3 : 2).map((contribution) => (
+              <p key={contribution}><Check size={13} /> {contribution}</p>
             ))}
           </div>
         </div>
 
-        {/* Spacer to push buttons to bottom */}
-        <div className="flex-1"></div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          {project.demoUrl && (
-            <motion.a
-              href={project.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <ExternalLink size={18} />
-              <span>Live Demo</span>
-            </motion.a>
-          )}
+        <div className="case-actions">
+          <button
+            onClick={() => onOpen(project)}
+            aria-haspopup="dialog"
+            aria-controls={`case-study-modal-${project.id}`}
+          >
+            View case study
+            <ArrowUpRight size={15} aria-hidden="true" />
+          </button>
+          <StoreLinks project={project} />
         </div>
-
-        {/* Expand Button */}
-        <motion.button
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setIsExpanded(!isExpanded)}
-          className={`w-full py-4 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 border-2 font-semibold ${
-            isExpanded 
-              ? 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/10 shadow-inner' 
-              : 'border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700'
-          }`}
-        >
-          {isExpanded ? '↑ Show Less Details' : '↓ Show More Details'}
-        </motion.button>
-
-        {/* Expanded Content */}
-        <AnimatePresence mode="wait">
-          {isExpanded && (
-            <motion.div
-              key={`expanded-${project.id}`}
-              initial={{ opacity: 0, height: 0, marginTop: 0 }}
-              animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
-              exit={{ opacity: 0, height: 0, marginTop: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="space-y-6 overflow-hidden"
-            >
-              {/* Full Description */}
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                  <Target size={18} />
-                  Project Overview
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {project.fullDescription}
-                </p>
-              </div>
-
-              {/* Key Features */}
-              {project.features.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <CheckCircle size={18} />
-                    Key Features
-                  </h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {project.features.map((feature, featureIndex) => (
-                      <motion.li
-                        key={featureIndex}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: featureIndex * 0.1 }}
-                        className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
-                      >
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-sm">{feature}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Challenges & Solutions */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {project.challenges.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <Lightbulb size={18} />
-                      Challenges
-                    </h4>
-                    <ul className="space-y-2">
-                      {project.challenges.map((challenge, challengeIndex) => (
-                        <motion.li
-                          key={challengeIndex}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: challengeIndex * 0.1 }}
-                          className="flex items-start gap-2 text-gray-600 dark:text-gray-300"
-                        >
-                          <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-sm">{challenge}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {project.solutions.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <CheckCircle size={18} />
-                      Solutions
-                    </h4>
-                    <ul className="space-y-2">
-                      {project.solutions.map((solution, solutionIndex) => (
-                        <motion.li
-                          key={solutionIndex}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: solutionIndex * 0.1 }}
-                          className="flex items-start gap-2 text-gray-600 dark:text-gray-300"
-                        >
-                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-sm">{solution}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-
-              {/* Impact & Timeline */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Impact</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">{project.impact}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                    <Clock size={16} />
-                    Timeline
-                  </h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">{project.timeline}</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
-    </motion.div>
-  );
-};
 
-interface ProjectsProps {
-  projects: Project[];
-}
-
-const Projects: React.FC<ProjectsProps> = ({ projects }) => {
-  return (
-    <section id="projects" className="section-padding bg-gray-50 dark:bg-slate-900">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-20"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="inline-block mb-4"
-          >
-            <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium tracking-wide uppercase">
-              Portfolio Showcase
-            </span>
-          </motion.div>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold gradient-text mb-8 tracking-tight">
-            Featured Projects
-          </h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed font-light"
-          >
-            Explore my professional journey through cutting-edge mobile applications and enterprise solutions. 
-            Each project showcases innovative problem-solving with modern technologies, 
-            <span className="font-medium text-gray-800 dark:text-gray-200"> from scalable React Native architectures</span> to 
-            <span className="font-medium text-gray-800 dark:text-gray-200"> mission-critical system integrations</span>. 
-            <span className="block mt-2 text-lg">
-              Transforming complex business requirements into elegant, user-centric digital experiences.
-            </span>
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="mt-8 flex justify-center"
-          >
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-          </motion.div>
+      <div className="case-visual">
+        <div className="case-glow" aria-hidden="true" />
+        <motion.div className="device-stage" style={{ y: reducedMotion ? 0 : visualY }}>
+          <div className="device-shadow" />
+          <div className="device-shell">
+            <DeviceScreen project={project} />
+          </div>
+          <div className="floating-metric metric-primary">
+            <span>{project.metrics[0].value}</span>
+            <small>{project.metrics[0].label}</small>
+          </div>
+          <div className="floating-metric metric-secondary">
+            <span>{project.metrics[1].value}</span>
+            <small>{project.metrics[1].label}</small>
+          </div>
         </motion.div>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {projects.map((project, index) => (
-            <div key={project.id} className="w-full flex">
-              <ProjectCard project={project} index={index} />
-            </div>
+        <div className="case-tech-row">
+          {project.technologies.slice(0, project.featured ? 6 : 4).map((technology) => (
+            <span key={technology}>{technology}</span>
           ))}
         </div>
       </div>
+
+    </motion.article>
+  );
+};
+
+const Projects = ({ projects }: ProjectsProps) => {
+  const [query, setQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]>('All');
+  const [selectedProject, setSelectedProject] = useState<CaseStudyProject | null>(null);
+
+  const filteredProjects = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return projects.filter((project) => {
+      const matchesFilter = activeFilter === 'All' || project.group === activeFilter;
+      const haystack = [
+        project.title,
+        project.client,
+        project.category,
+        project.role,
+        ...project.technologies,
+        ...project.features,
+      ]
+        .join(' ')
+        .toLowerCase();
+      return matchesFilter && (!normalizedQuery || haystack.includes(normalizedQuery));
+    });
+  }, [activeFilter, projects, query]);
+
+  const featuredProjects = filteredProjects.filter((project) => project.featured);
+  const collectionProjects = filteredProjects.filter((project) => !project.featured);
+
+  return (
+    <section id="projects" className="section projects-section">
+      <div className="site-container">
+        <div className="section-heading projects-heading">
+          <div>
+            <span className="eyebrow"><span>03</span> Selected work</span>
+            <h2>Production apps, told as engineering case studies.</h2>
+          </div>
+          <p>
+            Seven shipped products across commerce, hospitality, field operations, security, kiosks,
+            and maritime systems—organized around the problems, decisions, and technical work behind them.
+          </p>
+        </div>
+
+        <div className="project-statistics">
+          <div><strong>07</strong><span>production products</span></div>
+          <div><strong>06</strong><span>industry contexts</span></div>
+          <div><strong>02</strong><span>mobile platforms</span></div>
+          <p>From 10K+ field-team workflows to high-traffic consumer commerce.</p>
+        </div>
+
+        <div className="project-toolbar">
+          <div className="project-filters" aria-label="Filter projects by category">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                className={activeFilter === filter ? 'is-active' : ''}
+                onClick={() => setActiveFilter(filter)}
+                aria-pressed={activeFilter === filter}
+              >
+                {filter}
+                <span>
+                  {filter === 'All' ? projects.length : projects.filter((project) => project.group === filter).length}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <label className="project-search">
+            <Search size={15} aria-hidden="true" />
+            <span className="sr-only">Search projects</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search tech or product…"
+            />
+            {query && (
+              <button onClick={() => setQuery('')} aria-label="Clear project search">
+                <X size={14} />
+              </button>
+            )}
+          </label>
+        </div>
+
+        <div className="project-result-meta" role="status" aria-live="polite">
+          <span>{filteredProjects.length.toString().padStart(2, '0')} case studies</span>
+          <span>Scroll to explore</span>
+        </div>
+
+        {filteredProjects.length ? (
+          <>
+            <div className="featured-case-studies">
+              {featuredProjects.map((project) => (
+                <CaseStudyCard
+                  project={project}
+                  index={projects.indexOf(project)}
+                  key={project.id}
+                  onOpen={setSelectedProject}
+                />
+              ))}
+            </div>
+
+            {collectionProjects.length > 0 && (
+              <>
+                <div className="collection-heading">
+                  <span>More production systems</span>
+                  <p>Enterprise workflows where reliability mattered more than spectacle.</p>
+                </div>
+                <div className="case-study-collection">
+                  {collectionProjects.map((project) => (
+                    <CaseStudyCard
+                      project={project}
+                      index={projects.indexOf(project)}
+                      key={project.id}
+                      onOpen={setSelectedProject}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="project-empty">
+            <Search size={22} />
+            <h3>No matching case studies</h3>
+            <p>Try another technology, product name, or category.</p>
+            <button onClick={() => { setQuery(''); setActiveFilter('All'); }}>Reset filters</button>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {selectedProject && (
+          <CaseStudyModal
+            key={selectedProject.id}
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

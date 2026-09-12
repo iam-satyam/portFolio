@@ -1,139 +1,196 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Menu, X, Home, User, Briefcase, Mail, Code } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useScroll } from 'framer-motion';
+import { ArrowUpRight, Menu, Moon, Sun, X } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
+import { useReducedMotionPreference } from '../../hooks/useReducedMotionPreference';
 
 interface NavigationProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange }) => {
+const navItems = [
+  { id: 'skills', label: 'Expertise' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Work' },
+  { id: 'achievements', label: 'Highlights' },
+];
+
+const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const reducedMotion = useReducedMotionPreference();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      const currentY = window.scrollY;
+      setScrolled(currentY > 24);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'about', label: 'About', icon: User },
-    { id: 'projects', label: 'Projects', icon: Code },
-    { id: 'experience', label: 'Experience', icon: Briefcase },
-    { id: 'contact', label: 'Contact', icon: Mail },
-  ];
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1025px)');
+    const closeOnDesktop = () => { if (desktop.matches) setIsOpen(false); };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const menuButton = menuButtonRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const content = [document.querySelector('main'), document.querySelector('footer'), document.querySelector('.nav-inner')];
+    const previousInert = content.map(element => element?.hasAttribute('inert'));
+    content.forEach(element => element?.setAttribute('inert', ''));
+    menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+      if (event.key !== 'Tab') return;
+      const buttons = menuRef.current?.querySelectorAll<HTMLButtonElement>('button');
+      if (!buttons?.length) return;
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      content.forEach((element, index) => { if (!previousInert[index]) element?.removeAttribute('inert'); });
+      window.removeEventListener('keydown', onKeyDown);
+      menuButton?.focus({ preventScroll: true });
+    };
+  }, [isOpen]);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      onSectionChange(sectionId);
-    }
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth' });
+    onSectionChange(sectionId);
     setIsOpen(false);
   };
+
+  const mobileItems = [{ id: 'home', label: 'Home' }, ...navItems, { id: 'contact', label: 'Contact' }];
 
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled 
-            ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-lg' 
-            : 'bg-transparent'
-        }`}
+        aria-label="Primary navigation"
+        initial={reducedMotion ? false : { y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className={`nav-shell ${scrolled ? 'is-scrolled' : ''}`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="text-xl font-bold gradient-text cursor-pointer"
-              onClick={() => scrollToSection('home')}
-            >
-              Satyam
-            </motion.div>
+        <motion.div className="scroll-progress" style={{ scaleX: scrollYProgress }} />
+        <div className="nav-inner">
+          <button className="wordmark" onClick={() => scrollToSection('home')} aria-label="Go to home">
+            <span className="wordmark-mark" aria-hidden="true">S</span>
+            <span className="wordmark-name">Satyam Singh</span>
+          </button>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <motion.button
-                    key={item.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => scrollToSection(item.id)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                      activeSection === item.id
-                        ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20'
-                        : 'text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
-                    }`}
-                  >
-                    <Icon size={18} />
-                    <span>{item.label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          <div className="nav-links">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={activeSection === item.id ? 'is-active' : ''}
+                aria-current={activeSection === item.id ? 'location' : undefined}
+                onClick={() => scrollToSection(item.id)}
               >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.button>
-            </div>
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="nav-actions">
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            >
+              <motion.span key={theme} initial={reducedMotion ? false : { rotate: -45, scale: 0.7, opacity: 0 }} animate={{ rotate: 0, scale: 1, opacity: 1 }} transition={{ duration: 0.22 }}>
+                {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+              </motion.span>
+              <span className="theme-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
+
+            <button className="nav-cta" onClick={() => scrollToSection('contact')}>
+              Let’s talk <ArrowUpRight size={15} aria-hidden="true" />
+            </button>
+
+            <button
+              className="menu-toggle"
+              ref={menuButtonRef}
+              onClick={() => setIsOpen((open) => !open)}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            >
+              {isOpen ? <X size={21} /> : <Menu size={21} />}
+            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        <motion.div
-          initial={false}
-          animate={{ height: isOpen ? 'auto' : 0 }}
-          className="md:hidden overflow-hidden bg-white dark:bg-slate-900 border-t dark:border-slate-800"
-        >
-          <div className="px-4 py-2 space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.button
-                  key={item.id}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`flex items-center space-x-3 w-full px-3 py-3 rounded-lg text-left transition-colors ${
-                    activeSection === item.id
-                      ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20'
-                      : 'text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <Icon size={20} />
-                  <span>{item.label}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
       </motion.nav>
 
-      {/* Mobile overlay */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/20 z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            id="mobile-navigation"
+            className="mobile-menu"
+            ref={menuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="mobile-menu-controls">
+              <button className="theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <button className="menu-toggle" onClick={() => setIsOpen(false)} aria-label="Close navigation menu"><X size={21} /></button>
+            </div>
+            <motion.div
+              className="mobile-menu-inner"
+              initial={reducedMotion ? false : { y: -12 }}
+              animate={{ y: 0 }}
+              exit={{ y: -20 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 34 }}
+            >
+              <span className="eyebrow">Navigate</span>
+              {mobileItems.map((item, index) => (
+                <motion.button
+                  key={item.id}
+                  initial={reducedMotion ? false : { opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 * index }}
+                  onClick={() => scrollToSection(item.id)}
+                  className={activeSection === item.id ? 'is-active' : ''}
+                  aria-current={activeSection === item.id ? 'location' : undefined}
+                >
+                  <span>0{index + 1}</span>
+                  {item.label}
+                </motion.button>
+              ))}
+              <p>React Native engineer · New Delhi, India</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

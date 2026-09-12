@@ -1,0 +1,396 @@
+/* Shared roles keep real content readable in both themes. Device previews have
+   their own dark palette so their app illustrations retain their appearance. */
+:root {
+  --muted: #a6afb7;
+  --quiet: #929da6;
+  --accent-ink: #9cff57;
+  --accent-soft: rgba(156, 255, 87, 0.09);
+  --on-accent: #102009;
+  --control: #171c21;
+  --control-hover: #20272d;
+  --nav-bg: rgba(14, 17, 20, 0.92);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  --headline-accent: linear-gradient(105deg, #b8f790, #a9baff);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f9fc;
+  --surface: #ffffff;
+  --surface-raised: #f0f4f8;
+  --text: #182630;
+  --muted: #526270;
+  --quiet: #62717e;
+  --line: #dce3e9;
+  --line-strong: #bcc9d2;
+  --accent: #26734d;
+  --accent-ink: #206442;
+  --accent-2: #4b60b5;
+  --accent-soft: #e9f3ec;
+  --on-accent: #ffffff;
+  --control: #ffffff;
+  --control-hover: #edf2f6;
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --card-shadow: 0 8px 28px rgba(28, 48, 65, 0.055);
+  --headline-accent: linear-gradient(105deg, #26734d, #435ea5);
+}
+
+html {
+  scrollbar-color: var(--line-strong) var(--bg);
+}
+
+html.theme-changing *,
+html.theme-changing *::before,
+html.theme-changing *::after {
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: ease;
+}
+
+::selection,
+.skip-link {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.eyebrow,
+.nav-links button,
+.hero-lede,
+.metric-context span,
+.availability,
+.hero-trust > span,
+.hero-engineering-highlights > div,
+.capability-detail,
+.skill-group-title p,
+.skill-item-copy > span,
+.role-impact li,
+.role-head time,
+.company-panel > a,
+.role-tools > div span,
+.project-result-meta,
+.project-statistics > p,
+.demo-store-link small,
+.private-release,
+.collection-heading p,
+.case-overview,
+.contribution-preview p,
+.proof-grid p,
+.education-track p,
+.contact-status,
+.contact-links a,
+.contact-links span,
+.resume-link,
+.contact-form label > span,
+.form-heading small,
+.footer-meta,
+.footer-actions a,
+.footer-actions button,
+.footer-signoff > div span {
+  color: var(--muted);
+}
+
+.skill-group-title h4,
+.skill-item-copy strong,
+.engineering-stat strong,
+.hero-expertise strong,
+.case-facts strong,
+.case-modal-header strong,
+.case-modal-facts strong {
+  color: var(--text);
+}
+
+.case-index,
+.case-title-row > div:last-child > span,
+.case-facts span,
+.contribution-preview > span,
+.proof-card-top > span,
+.proof-value > span,
+.education-heading > div:last-child > span {
+  color: var(--quiet);
+}
+
+.nav-inner,
+.nav-shell.is-scrolled .nav-inner {
+  border: 1px solid var(--line);
+  background: var(--nav-bg);
+  box-shadow: var(--card-shadow);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.wordmark-mark {
+  background: var(--accent-soft);
+  border-color: var(--line);
+  color: var(--accent-ink);
+  box-shadow: none;
+}
+
+.nav-links button:hover,
+.nav-links button.is-active {
+  background: var(--control-hover);
+  color: var(--text);
+}
+
+.nav-cta {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.nav-cta:hover,
+.button-primary,
+.button-primary:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.button-primary:hover { filter: brightness(1.07); }
+
+.theme-toggle,
+.menu-toggle,
+.button-secondary,
+.direct-contact > a,
+.direct-contact button,
+.project-search,
+.project-filters,
+.case-modal-header > button {
+  border-color: var(--line);
+  background: var(--control);
+  color: var(--text);
+}
+
+.theme-toggle:hover,
+.menu-toggle:hover,
+.button-secondary:hover,
+.case-modal-header > button:hover {
+  border-color: var(--line-strong);
+  background: var(--control-hover);
+  color: var(--text);
+}
+
+.mobile-menu {
+  background: var(--bg);
+}
+
+.hero-display-line.is-emphasis {
+  background: var(--headline-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.hero-status-pill {
+  border-color: var(--line);
+  background: var(--control);
+  box-shadow: none;
+}
+
+.hero-trust > span {
+  padding: 3px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.65rem;
+}
+
+.hero-engineering-highlights > div {
+  min-height: 36px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.7rem;
+}
+
+.hero-trust > span:hover,
+.hero-engineering-highlights > div:hover {
+  color: var(--text);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.hero-visual,
+.case-visual {
+  --text: #f4f5f2;
+  --muted: #a6afb7;
+  --quiet: #929da6;
+  --accent: #9cff57;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  color: var(--text);
+  color-scheme: dark;
+}
+
+.case-study,
+.case-modal { --case-ink: var(--case-accent); }
+
+.project-filters button { color: var(--muted); }
+.project-filters button span {
+  background: var(--control-hover);
+  color: var(--muted);
+}
+.project-filters button:hover,
+.project-filters button.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.project-filters button.is-active span {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.project-empty button { color: var(--on-accent); }
+.project-search input { color: var(--text); }
+.project-search:focus-within {
+  background: var(--surface);
+  border-color: var(--accent);
+  outline: 3px solid var(--accent-soft);
+}
+.project-search > button {
+  color: var(--text);
+  background: var(--control-hover);
+}
+.project-search input::placeholder,
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: var(--quiet); }
+
+.contact-form input,
+.contact-form textarea {
+  color: var(--text);
+  background: var(--bg);
+  border-color: var(--line-strong);
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Light surfaces use a quiet canvas, solid cards, and a single shadow scale. */
+html[data-theme="light"] .ambient { opacity: 0.025; }
+html[data-theme="light"] .page-grid { opacity: 0.3; }
+html[data-theme="light"] .hero-glow {
+  background: radial-gradient(circle, rgba(73, 108, 173, 0.055), transparent 66%);
+}
+html[data-theme="light"] .hero-copy-atmosphere { opacity: 0; }
+html[data-theme="light"] .hero-status-pill:hover {
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+html[data-theme="light"] .phone-shell {
+  box-shadow: 0 28px 55px rgba(28, 48, 65, 0.18), 0 5px 14px rgba(28, 48, 65, 0.12);
+}
+html[data-theme="light"] .visual-orbit { border-color: rgba(63, 88, 145, 0.1); }
+html[data-theme="light"] .float-note {
+  background: #fff;
+  border-color: #dce3e9;
+  color: #526270;
+  box-shadow: 0 8px 24px rgba(28, 48, 65, 0.08);
+}
+html[data-theme="light"] .float-note strong,
+html[data-theme="light"] .float-number { color: #182630; }
+html[data-theme="light"] .float-note small { color: #62717e; }
+
+html[data-theme="light"] :is(.metrics-strip, .project-statistics, .capability-grid, .experience-frame, .proof-grid, .education-panel, .contact-frame) {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] :is(.metrics-strip, .project-statistics) { border-radius: 16px; }
+html[data-theme="light"] .capability-grid { overflow: hidden; }
+html[data-theme="light"] :is(.expertise-section, .projects-section, .achievements-section) {
+  border-color: var(--line);
+  background: #f0f4f8;
+}
+html[data-theme="light"] :is(.experience-section, .contact-section) { background: var(--bg); }
+html[data-theme="light"] .capability-card { background: var(--surface); }
+html[data-theme="light"] :is(.capability-card.is-featured, .capability-card:hover) {
+  background: linear-gradient(145deg, #edf5ef, #ffffff);
+}
+html[data-theme="light"] .skills-console {
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] .skills-console::before { opacity: 0.15; }
+html[data-theme="light"] .engineering-stat { background: var(--surface); }
+html[data-theme="light"] .skills-console-body { background: #f7f9fc; }
+html[data-theme="light"] .skill-group {
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] .skill-group[data-category="mobile"] { border-color: #b9d5c2; }
+html[data-theme="light"] .skill-group[data-category="analytics"] { border-color: #c4cce7; }
+html[data-theme="light"] .skill-group[data-category="analytics"] .skill-group-icon {
+  color: var(--accent-2);
+}
+html[data-theme="light"] :is(.skill-group:hover, .skill-group:focus-visible) {
+  border-color: var(--line-strong);
+  background: var(--surface);
+  box-shadow: 0 12px 30px rgba(28, 48, 65, 0.09);
+}
+html[data-theme="light"] .skill-group::before { background: none; }
+html[data-theme="light"] .skill-item {
+  border-color: var(--line);
+  background: var(--bg);
+  box-shadow: none;
+}
+html[data-theme="light"] .skill-item:hover { background: var(--accent-soft); }
+html[data-theme="light"] .skill-item > small {
+  border-color: #c6dfcd;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+html[data-theme="light"] .company-panel { padding: 32px; }
+html[data-theme="light"] .company-logo {
+  height: auto;
+  padding: 12px;
+  border-radius: 8px;
+  background: #17212b;
+}
+html[data-theme="light"] .role:last-child { border-bottom: 0; }
+html[data-theme="light"] :is(.current-badge, .education-track small) {
+  background: var(--accent-soft);
+  border-color: #c6dfcd;
+  color: var(--accent-ink);
+}
+html[data-theme="light"] .live-dot { background: var(--accent); }
+html[data-theme="light"] .case-copy .case-logo { box-shadow: 0 4px 12px rgba(28, 48, 65, 0.1); }
+
+html[data-theme="light"] :is(.case-study, .case-modal) {
+  --case-ink: color-mix(in srgb, var(--case-accent) 32%, #182630);
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] :is(.case-badges > span, .full-tech-stack > div span, .case-modal-stack > div > span) {
+  border-color: var(--line);
+  background: var(--bg);
+  color: var(--muted);
+}
+html[data-theme="light"] :is(.case-badges .featured-badge, .case-actions > button, .case-modal-section > span, .case-modal-timeline i) {
+  color: var(--case-ink);
+}
+html[data-theme="light"] :is(.case-actions > button, .store-links > .demo-store-link) {
+  background: var(--bg);
+  color: var(--case-ink);
+  border-color: var(--line-strong);
+}
+html[data-theme="light"] .case-modal-backdrop { background: rgba(24, 38, 48, 0.28); }
+html[data-theme="light"] .case-modal-header { background: var(--surface); }
+html[data-theme="light"] :is(.case-modal-hero, .case-modal-section, .case-details) { background: var(--bg); }
+html[data-theme="light"] :is(.case-modal-hero > p, .case-modal-section > p, .case-modal-section li, .case-modal-timeline > div > span, .detail-list li, .case-problem p) {
+  color: var(--muted);
+}
+html[data-theme="light"] :is(.case-modal-facts, .case-modal-timeline i, .case-timeline i) { background: var(--surface); }
+html[data-theme="light"] .project-empty { color: var(--muted); }
+html[data-theme="light"] .proof-grid article { background: var(--surface); }
+html[data-theme="light"] .proof-grid article:hover { background: var(--bg); }
+html[data-theme="light"] .proof-icon { background: var(--accent-soft); }
+html[data-theme="light"] .contact-form { background: #f7f9fc; }
+html[data-theme="light"] .footer { background: #edf2f6; }

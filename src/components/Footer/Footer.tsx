@@ -1,55 +1,55 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Heart, ArrowUp } from 'lucide-react';
+import { ArrowUp, Code2, Linkedin } from 'lucide-react';
+import { useReducedMotionPreference } from '../../hooks/useReducedMotionPreference';
 
-const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
+const Footer = () => {
+  const reducedMotion = useReducedMotionPreference();
   return (
-    <footer className="bg-gray-900 text-white py-12 relative">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center space-y-6">
-          {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-2xl font-bold gradient-text"
-          >
-            Satyam
-          </motion.div>
-          
-          {/* Copyright */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-2 text-gray-400"
-          >
-            <span>&copy; 2024 Made with</span>
-            <Heart size={16} className="text-red-500 fill-current" />
-            <span>by Satyam</span>
-          </motion.div>
+    <footer className="footer">
+      <div className="site-container footer-inner">
+        <div className="footer-signoff">
+          <span className="wordmark-mark" aria-hidden="true">S</span>
+          <div>
+            <strong>Satyam Singh</strong>
+            <span>Mobile products, engineered with care.</span>
+          </div>
         </div>
+
+        <div className="footer-meta">
+          <span>© {new Date().getFullYear()} Satyam Singh</span>
+          <span>Built with React, TypeScript & restraint</span>
+          <span>v2.0</span>
+        </div>
+
+        <div className="footer-actions">
+          <a
+            href="https://www.linkedin.com/in/satyam-a4791321a/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Satyam on LinkedIn"
+          >
+            <Linkedin size={16} />
+          </a>
+          <a
+            href="https://leetcode.com/u/satyamEpoch"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Satyam on LeetCode"
+          >
+            <Code2 size={16} />
+          </a>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'instant' : 'smooth' })}
+            aria-label="Back to top"
+          >
+            <ArrowUp size={16} />
+          </button>
+        </div>
+
+        <p className="footer-legal">
+          Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other
+          countries. Google Play and the Google Play logo are trademarks of Google LLC.
+        </p>
       </div>
-      
-      {/* Scroll to top button */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        transition={{ duration: 0.3 }}
-        viewport={{ once: true }}
-        onClick={scrollToTop}
-        className="absolute top-6 right-6 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all duration-300"
-      >
-        <ArrowUp size={20} />
-      </motion.button>
     </footer>
   );
 };

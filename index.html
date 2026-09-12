@@ -1,14 +1,64 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Satyam - React Native Developer & Mobile App Expert. Specialized in building scalable, offline-first mobile applications with React Native, Redux, and Firebase." />
-    <meta name="keywords" content="React Native Developer, Mobile App Developer, React Native, Redux, Firebase, Mobile Applications, Offline-first Apps, Portfolio" />
-    <title>Satyam - React Native Developer</title>
+    <meta name="theme-color" content="#080a0c" />
+    <script>
+      (() => {
+        let theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        try {
+          const savedTheme = localStorage.getItem('portfolio-theme');
+          if (savedTheme === 'light' || savedTheme === 'dark') theme = savedTheme;
+        } catch { /* Use the system theme when storage is unavailable. */ }
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content =
+          theme === 'light' ? '#f7f9fc' : '#080a0c';
+      })();
+    </script>
+    <meta name="description" content="Satyam Singh is a React Native engineer building resilient, high-performance mobile products for commerce, enterprise, and operational teams." />
+    <meta name="keywords" content="Satyam Singh, React Native Engineer, Mobile App Developer, TypeScript, Redux, Firebase, Offline-first Apps, New Delhi" />
+    <meta name="author" content="Satyam Singh" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="canonical" href="https://satyam-portfolio.vercel.app/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Satyam Singh — Portfolio" />
+    <meta property="og:title" content="Satyam Singh — React Native Engineer" />
+    <meta property="og:description" content="Production-grade mobile engineering for ambitious product teams." />
+    <meta property="og:url" content="https://satyam-portfolio.vercel.app/" />
+    <meta property="og:image" content="https://satyam-portfolio.vercel.app/og-card.svg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Satyam Singh — React Native Engineer" />
+    <meta name="twitter:description" content="Production-grade mobile engineering for ambitious product teams." />
+    <meta name="twitter:image" content="https://satyam-portfolio.vercel.app/og-card.svg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Satyam Singh",
+        "url": "https://satyam-portfolio.vercel.app/",
+        "jobTitle": "React Native Engineer",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "New Delhi",
+          "addressCountry": "IN"
+        },
+        "sameAs": [
+          "https://www.linkedin.com/in/satyam-a4791321a/",
+          "https://leetcode.com/u/satyamEpoch"
+        ],
+        "knowsAbout": ["React Native", "TypeScript", "Redux", "Firebase", "Mobile application development"]
+      }
+    </script>
+    <title>Satyam Singh — React Native Engineer</title>
   </head>
-  <body class="antialiased">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
